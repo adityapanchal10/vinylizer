@@ -57,6 +57,10 @@ module.exports = function (msg, args) {
 				value: `!playsaved queue_name`,
 			},
 			{
+				name: "See saved playlists",
+				value: `!viewsaved`,
+			},
+			{
 				name: "Stop playing and leave",
 				value: `!leave`,
 			}
