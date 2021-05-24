@@ -14,6 +14,8 @@ async function playsaved(msg, args) {
 	if (!perm.has("CONNECT") || !perm.has("SPEAK"))
 		return channel.send("You do not have necessary permissions.");
 
+	if (!fs.existsSync(`saved/${args}.json`))
+    		return channel.send("No such saved playlist found :/");
 	const databuffer = fs.readFileSync(`saved/${args}.json`);
 	const dataJSON = databuffer.toString();
 	const playlist = JSON.parse(dataJSON);
