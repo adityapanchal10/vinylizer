@@ -49,6 +49,9 @@ module.exports = async function (msg) {
 		if (command.charAt(0) === process.env.ID) {
 			command = command.substring(1);
 			// console.log(command);
+			if (!commandList[command])
+        			return msg.channel.send(`Please enter a valid command, for more info type **!help**`);
+			
 			commandList[command](msg, tokens.join(` `));
 		}
 	}
