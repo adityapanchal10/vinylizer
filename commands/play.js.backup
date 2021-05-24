@@ -1,0 +1,124 @@
+const ytdl = require("ytdl-core");
+const ytSearch = require("yt-search");
+const ytpl = require("ytpl");
+let query, id;
+var flag = false;
+
+async function play(msg, args) {
+	const { guild, channel, member } = msg;
+	id = msg.client.id;
+	// console.log("S_id " + id);
+
+	const voiceChannel = member.voice.channel;
+	if (!voiceChannel)
+		return channel.send("Need to be connected in a voice channel.");
+
+	const perm = voiceChannel.permissionsFor(msg.client.user);
+	if (!perm.has("CONNECT") || !perm.has("SPEAK"))
+		return channel.send("You do not have necessary permissions.");
+
+	const serverQueue = msg.client.queue.get(guild.id);
+	const queue = msg.client.queue;
+
+	const videoFinder = async (query) => {
+		const videoResult = await ytSearch(query);
+		return videoResult.videos.length > 1 ? videoResult.videos[0] : null;
+	};
+
+	// console.log(args);
+
+	const video = await videoFinder(args);
+	if (matchYoutubeUrl(args)) {
+		console.log("URL found !");
+		if (flag) {
+			console.log("Playlist found !!");
+		} else {
+			query = args;
+		}
+	} else {
+		query = video.url;
+	}
+	const songInfo = await ytdl.getInfo(query);
+	const song = {
+		id: id,
+		title: songInfo.videoDetails.title,
+		url: songInfo.videoDetails.video_url,
+	};
+	id++;
+	msg.client.id = id;
+	// console.log("R_id " + id);
+
+	if (!serverQueue) {
+		const queueConstruct = {
+			textChannel: channel,
+			voiceChannel: voiceChannel,
+			connection: null,
+			songs: [],
+			volume: 1,
+			playing: true,
+			i: 0,
+		};
+
+		queue.set(guild.id, queueConstruct);
+
+		queueConstruct.songs.push(song);
+
+		try {
+			var connection = await voiceChannel.join();
+			queueConstruct.connection = connection;
+			playy(msg, queueConstruct.songs[queueConstruct.i++]);
+		} catch (err) {
+			console.log(err);
+			queue.delete(guild.id);
+			return channel.send(err);
+		}
+	} else {
+		serverQueue.songs.push(song);
+		if (serverQueue.songs.length === 1) {
+			playy(msg, serverQueue.songs[serverQueue.i++]);
+		} else
+			return channel.send(`**${song.title}** has been added to the queue!`);
+	}
+}
+
+function playy(msg, song) {
+	const queue = msg.client.queue;
+	const guild = msg.guild;
+	const serverQueue = queue.get(guild.id);
+
+	console.log(serverQueue.i);
+	console.log(song);
+
+	if (!song) {
+		serverQueue.voiceChannel.leave();
+		queue.delete(guild.id);
+		serverQueue.textChannel.send(`Finished playing.`);
+		msg.client.id = 1;
+		return;
+	}
+
+	const stream = ytdl(song.url, {
+		filter: "audioonly",
+		quality: "highestaudio",
+	});
+
+	const dispatcher = serverQueue.connection
+		.play(stream, { seek: 0, volume: 1 })
+		.on("finish", () => {
+			playy(msg, serverQueue.songs[serverQueue.i++]);
+		});
+	serverQueue.textChannel.send(`Now playing: **${song.title}**`);
+}
+
+function matchYoutubeUrl(url) {
+	var p = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+	var q = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
+	if (url.match(p)) return true;
+	if (url.match(q)) {
+		flag = true;
+		return true;
+	}
+	return false;
+}
+
+module.exports = play;
