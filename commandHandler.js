@@ -17,6 +17,7 @@ const help = require("./commands/help");
 const save = require("./commands/save");
 const playsaved = require("./commands/playsaved");
 const jumpto = require("./commands/jumpto");
+const viewsaved = require("./commands/viewsaved");
 
 const commandList = {
 	ping,
@@ -34,6 +35,7 @@ const commandList = {
 	save,
 	playsaved,
 	jumpto,
+	viewsaved,
 };
 
 module.exports = async function (msg) {
