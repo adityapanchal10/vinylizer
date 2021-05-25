@@ -45,6 +45,10 @@ module.exports = function (msg, args) {
 				value: `!resume`,
 			},
 			{
+				name: "Shuffle the queue",
+				value: `!shuffle on/off`,
+			},
+			{
 				name: "Jump to a song in queue",
 				value: `!jumpto song_number`,
 			},
