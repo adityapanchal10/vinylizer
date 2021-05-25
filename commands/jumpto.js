@@ -11,6 +11,7 @@ module.exports = function (msg, args) {
 		);
 	if (serverQueue.songs.length < args)
 		return serverQueue.textChannel.send("Invalid index !!");
+	serverQueue.jump = args - 1;
 	serverQueue.i = args - 1;
 	serverQueue.connection.dispatcher.end("Jump command has been used!");
 };
