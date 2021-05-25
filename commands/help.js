@@ -45,6 +45,10 @@ module.exports = function (msg, args) {
 				value: `!resume`,
 			},
 			{
+				name: "Shuffle the queue",
+				value: `!shuffle on/off`,
+			},
+			{
 				name: "Jump to a song in queue",
 				value: `!jumpto song_number`,
 			},
@@ -55,6 +59,10 @@ module.exports = function (msg, args) {
 			{
 				name: "Play a saved queue",
 				value: `!playsaved queue_name`,
+			},
+			{
+				name: "See saved playlists",
+				value: `!viewsaved`,
 			},
 			{
 				name: "Stop playing and leave",

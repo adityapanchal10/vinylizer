@@ -4,6 +4,7 @@ module.exports = function (msg, args) {
 	if (serverQueue) {
 		serverQueue.voiceChannel.leave();
 		queue.delete(msg.guild.id);
+		msg.client.shuffle = false;
 		serverQueue.textChannel.send(`Leaving voice.`);
-	}
+	} else return msg.channel.send("Voice not connected.");
 };

@@ -17,6 +17,8 @@ const help = require("./commands/help");
 const save = require("./commands/save");
 const playsaved = require("./commands/playsaved");
 const jumpto = require("./commands/jumpto");
+const viewsaved = require("./commands/viewsaved");
+const shuffle = require("./commands/shuffle");
 
 const commandList = {
 	ping,
@@ -34,6 +36,8 @@ const commandList = {
 	save,
 	playsaved,
 	jumpto,
+  viewsaved,
+  shuffle,
 };
 
 module.exports = async function (msg) {
@@ -49,7 +53,10 @@ module.exports = async function (msg) {
 		if (command.charAt(0) === process.env.ID) {
 			command = command.substring(1);
 			// console.log(command);
-			commandList[command](msg, tokens.join(` `));
+			
+      if (!commandList[command])
+        return msg.channel.send(`Please enter a valid command, for more info type **!help**`);
+      commandList[command](msg, tokens.join(` `));
 		}
 	}
 };

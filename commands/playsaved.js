@@ -6,6 +6,8 @@ async function playsaved(msg, args) {
 	const serverQueue = msg.client.queue.get(msg.guild.id);
 	const { guild, channel, member } = msg;
 	const queue = msg.client.queue;
+	const shuffle = msg.client.shuffle;
+
 	const voiceChannel = member.voice.channel;
 	if (!voiceChannel)
 		return channel.send("Need to be connected in a voice channel.");
@@ -42,6 +44,7 @@ async function playsaved(msg, args) {
 			volume: 1,
 			playing: true,
 			i: 0,
+			jump: -1,
 		};
 
 		queue.set(msg.guild.id, queueConstruct);
@@ -84,9 +87,19 @@ function playy(msg, song) {
 	const dispatcher = serverQueue.connection
 		.play(stream, { seek: 0, volume: 1 })
 		.on("finish", () => {
-			playy(msg, serverQueue.songs[serverQueue.i++]);
+			if (msg.client.shuffle) {
+				if (serverQueue.jump != -1) {
+					serverQueue.i = serverQueue.jump;
+					serverQueue.jump = -1;
+				} else serverQueue.i = randInt(0, serverQueue.songs.length);
+				playy(msg, serverQueue.songs[serverQueue.i++]);
+			} else playy(msg, serverQueue.songs[serverQueue.i++]);
 		});
 	serverQueue.textChannel.send(`Now playing: **${song.title}**`);
+}
+
+function randInt(min, max) {
+	return Math.floor(Math.random() * (max - min)) + min;
 }
 
 module.exports = playsaved;
