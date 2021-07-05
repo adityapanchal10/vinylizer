@@ -18,5 +18,7 @@ module.exports = class extends (
 		this.id = 1;
 
     this.shuffle = false;
+
+    this.date = null;
 	}
 };
