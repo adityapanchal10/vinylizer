@@ -18,6 +18,7 @@ const save = require("./commands/save");
 const playsaved = require("./commands/playsaved");
 const jumpto = require("./commands/jumpto");
 const viewsaved = require("./commands/viewsaved");
+
 const shuffle = require("./commands/shuffle");
 
 const commandList = {
@@ -36,8 +37,9 @@ const commandList = {
 	save,
 	playsaved,
 	jumpto,
-  viewsaved,
-  shuffle,
+	viewsaved,
+	shuffle,
+
 };
 
 module.exports = async function (msg) {
@@ -54,9 +56,9 @@ module.exports = async function (msg) {
 			command = command.substring(1);
 			// console.log(command);
 			
-      if (!commandList[command])
-        return msg.channel.send(`Please enter a valid command, for more info type **!help**`);
-      commandList[command](msg, tokens.join(` `));
+    if (!commandList[command])
+      return msg.channel.send(`Please enter a valid command, for more info type **!help**`);
+    commandList[command](msg, tokens.join(` `));
 		}
 	}
 };

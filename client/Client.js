@@ -20,5 +20,6 @@ module.exports = class extends (
     this.shuffle = false;
 
     this.date = null;
+	
 	}
 };
