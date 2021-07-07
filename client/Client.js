@@ -16,7 +16,10 @@ module.exports = class extends (
 		this.config = config;
 
 		this.id = 1;
-		
-		this.shuffle = false;
+
+    this.shuffle = false;
+
+    this.date = null;
+	
 	}
 };

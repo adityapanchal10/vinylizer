@@ -20,6 +20,9 @@ async function play(msg, args) {
 	if (!perm.has("CONNECT") || !perm.has("SPEAK"))
 		return channel.send("You do not have necessary permissions.");
 
+  if (!args)
+    return channel.send("Please enter a valid song name or link.");
+
 	const serverQueue = msg.client.queue.get(guild.id);
 	const queue = msg.client.queue;
 
