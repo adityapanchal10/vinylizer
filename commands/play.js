@@ -1,15 +1,23 @@
 const ytdl = require("ytdl-core");
 const ytSearch = require("yt-search");
 const ytpl = require("ytpl");
-let query, id;
+let query, id, shuffle;
 let flag = false;
 let urllist = [];
 let songlist = [];
 
 async function play(msg, args) {
 	const { guild, channel, member } = msg;
-	id = msg.client.id;
-	const shuffle = msg.client.shuffle;
+	id = msg.client.id.get(guild.id);
+	if (!id) {
+		msg.client.id.set(guild.id, 1);
+		id = msg.client.id.get(guild.id);
+	}
+	shuffle = msg.client.shuffle.get(guild.id);
+	if (!shuffle) {
+		msg.client.shuffle.set(guild.id, false);
+		shuffle = msg.client.shuffle.get(guild.id);
+	}
 	// console.log("S_id " + id);
 
 	const voiceChannel = member.voice.channel;
@@ -59,7 +67,7 @@ async function play(msg, args) {
 
 		console.log("Songs retrieved and pushed successfully.");
 		// console.log(songlist);
-		msg.client.id = id;
+		msg.client.id.set(guild.id, id);
 
 		if (!serverQueue) {
 			const queueConstruct = {
@@ -120,7 +128,7 @@ async function play(msg, args) {
 			url: songInfo.videoDetails.video_url,
 		};
 		id++;
-		msg.client.id = id;
+		msg.client.id.set(guild.id, id);
 		// console.log("R_id " + id);
 
 		console.log("Song found and pushed !");
@@ -175,7 +183,7 @@ function playy(msg, song) {
 		serverQueue.voiceChannel.leave();
 		queue.delete(guild.id);
 		serverQueue.textChannel.send(`Finished playing. ✨`);
-		msg.client.id = 1;
+		msg.client.id.set(guild.id, 1);
 		return;
 	}
 
@@ -187,7 +195,7 @@ function playy(msg, song) {
 	const dispatcher = serverQueue.connection
 		.play(stream, { seek: 0, volume: 1 })
 		.on("finish", () => {
-			if (msg.client.shuffle) {
+			if (msg.client.shuffle.get(guild.id)) {
 				if (serverQueue.jump != -1) {
 					serverQueue.i = serverQueue.jump;
 					serverQueue.jump = -1;
@@ -200,7 +208,9 @@ function playy(msg, song) {
 
 function matchYoutubeUrl(url) {
 	var p = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
-	if (url.match(p)) return true;
+  var q = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?/
+  var r = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/gm;
+	if (url.match(p) || url.match(q) || url.match(r)) return true;
 	return false;
 }
 

@@ -45,7 +45,9 @@ const commandList = {
 module.exports = async function (msg) {
 	if (
 		msg.channel.id === process.env.CHANNELID1 ||
-		msg.channel.id === process.env.CHANNELID2
+		msg.channel.id === process.env.CHANNELID2 ||
+    msg.channel.id === process.env.CHANNELID3 ||
+    msg.channel.id === process.env.CHANNELID4
 	) {
 		// console.log(msg.content);
 		let tokens = msg.content.split(" ");

@@ -6,7 +6,7 @@ async function playsaved(msg, args) {
 	const serverQueue = msg.client.queue.get(msg.guild.id);
 	const { guild, channel, member } = msg;
 	const queue = msg.client.queue;
-	const shuffle = msg.client.shuffle;
+	const shuffle = msg.client.shuffle.get(guild.id);
 
 	const voiceChannel = member.voice.channel;
 	if (!voiceChannel)
@@ -20,7 +20,7 @@ async function playsaved(msg, args) {
 	const dataJSON = databuffer.toString();
 	const playlist = JSON.parse(dataJSON);
 
-	msg.client.id = playlist[playlist.length - 1].id + 2;
+	msg.client.id.set(guild.id, playlist[playlist.length - 1].id + 2);
 	// console.log(msg.client.id);
 
 	if (serverQueue) {
@@ -58,6 +58,8 @@ async function playsaved(msg, args) {
 		} catch (err) {
 			console.log(err);
 			queue.delete(guild.id);
+      msg.client.id.delete(guild.id);
+			msg.client.shuffle.delete(guild.id);
 			return channel.send(err);
 		}
 	}
@@ -75,7 +77,7 @@ function playy(msg, song) {
 		serverQueue.voiceChannel.leave();
 		queue.delete(guild.id);
 		serverQueue.textChannel.send(`Finished playing.`);
-		msg.client.id = 1;
+		msg.client.id.set(guild.id, 1);
 		return;
 	}
 
@@ -87,7 +89,7 @@ function playy(msg, song) {
 	const dispatcher = serverQueue.connection
 		.play(stream, { seek: 0, volume: 1 })
 		.on("finish", () => {
-			if (msg.client.shuffle) {
+			if (msg.client.shuffle.get(guild.id)) {
 				if (serverQueue.jump != -1) {
 					serverQueue.i = serverQueue.jump;
 					serverQueue.jump = -1;
