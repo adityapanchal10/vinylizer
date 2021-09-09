@@ -20,6 +20,10 @@ client.on("ready", () => {
   client.date = new Date();
   console.log(`Timestamp: ${client.date.toLocaleDateString()} ${client.date.toLocaleTimeString()}`);
   log(`Logged in at ${client.date.toLocaleDateString()} ${client.date.toLocaleTimeString()} ! OS uptime: ${os.uptime()/86400} days`);
+  client.user.setActivity("!play", {
+    type: "LISTENING",
+    name: "play"
+  });
 });
 
 client.on("message", commandHandler);

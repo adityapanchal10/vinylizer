@@ -47,7 +47,8 @@ module.exports = async function (msg) {
 		msg.channel.id === process.env.CHANNELID1 ||
 		msg.channel.id === process.env.CHANNELID2 ||
     msg.channel.id === process.env.CHANNELID3 ||
-    msg.channel.id === process.env.CHANNELID4
+    msg.channel.id === process.env.CHANNELID4 || 
+    msg.channel.id === process.env.CHANNELID5
 	) {
 		// console.log(msg.content);
 		let tokens = msg.content.split(" ");
