@@ -180,9 +180,9 @@ function playy(msg, song) {
 	console.log(song);
 
 	if (!song) {
-		serverQueue.voiceChannel.leave();
-		queue.delete(guild.id);
+    serverQueue.voiceChannel.leave()
 		serverQueue.textChannel.send(`Finished playing. ✨`);
+    queue.delete(guild.id);
 		msg.client.id.set(guild.id, 1);
 		return;
 	}
@@ -215,7 +215,8 @@ function matchYoutubeUrl(url) {
 }
 
 function isPlaylist(url) {
-	var q = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
+	// var q = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
+  var q = /^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/;
 	if (url.match(q)) {
 		flag = true;
 		return true;

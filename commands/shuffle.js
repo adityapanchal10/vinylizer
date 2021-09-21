@@ -9,7 +9,7 @@ module.exports = function(msg, args) {
         return serverQueue.textChannel.send("Shuffle turned off !!");
       } else
         return serverQueue.textChannel.send(
-          `Shuffle currently ON, use **!shuffle off** to turn it off.`
+          `Shuffle currently ON, use **-shuffle off** to turn it off.`
         );
     } else {
       if (args === "off")
@@ -19,7 +19,7 @@ module.exports = function(msg, args) {
         return serverQueue.textChannel.send("Shuffle turned on !!");
       } else
         return serverQueue.textChannel.send(
-          `Shuffle currently OFF, use **!shuffle on** to turn it on.`
+          `Shuffle currently OFF, use **-shuffle on** to turn it on.`
         );
     }
   }

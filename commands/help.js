@@ -10,63 +10,63 @@ module.exports = function (msg, args) {
 		.addFields(
 			{
 				name: "Get bot info",
-				value: "!botinfo",
+				value: "-botinfo",
 			},
 			{
 				name: "Get user info",
-				value: "!userinfo OR !userinfo @someone",
+				value: "-userinfo OR -userinfo @someone",
 			},
 			{
 				name: "Play a song",
-				value: `!play song_name / song_url (adds to queue if a song is playing currently)`,
+				value: `-play song_name / song_url,  -p for short (adds to queue if a song is playing currently)`,
 			},
 			{
 				name: "See queue",
-				value: `!queue`,
+				value: `-queue OR -q`,
 			},
 			{
 				name: "Play next song in queue",
-				value: `!next`,
+				value: `-next OR -n`,
 			},
 			{
 				name: "Play previous song in queue",
-				value: `!previous`,
+				value: `-previous`,
 			},
 			{
 				name: "Clear queue",
-				value: `!clear`,
+				value: `-clear`,
 			},
 			{
 				name: "Pause currently playing song",
-				value: `!pause`,
+				value: `-pause`,
 			},
 			{
 				name: "Resume paused song",
-				value: `!resume`,
+				value: `-resume`,
 			},
 			{
 				name: "Shuffle the queue",
-				value: `!shuffle on/off`,
+				value: `-shuffle on/off or -s`,
 			},
 			{
 				name: "Jump to a song in queue",
-				value: `!jumpto song_number`,
+				value: `-jumpto song_number`,
 			},
 			{
 				name: "Save the current queue for later",
-				value: `!save queue_name`,
+				value: `-save queue_name`,
 			},
 			{
 				name: "Play a saved queue",
-				value: `!playsaved queue_name`,
+				value: `-playsaved queue_name`,
 			},
 			{
 				name: "See saved playlists",
-				value: `!viewsaved`,
+				value: `-viewsaved`,
 			},
 			{
 				name: "Stop playing and leave",
-				value: `!leave`,
+				value: `-leave`,
 			}
 		);
 
