@@ -42,9 +42,14 @@ async function play(msg, args) {
 	// console.log(args);
 
 	if (isPlaylist(args)) {
-		const response = await ytpl(args);
-		if (!response)
-			return msg.channel.send("Encountered a problem with the url :/");
+		var response;
+    try {
+      response = await ytpl(args);
+    }
+    catch(err) {
+      console.log(`${err.name}: ${err.message}`);
+      return msg.channel.send(":/ Encountered a problem with the url: " +err.message);
+    }
 		const list = response.items;
 		list.forEach((element) => {
 			urllist.push(element.shortUrl);
@@ -53,16 +58,20 @@ async function play(msg, args) {
 		console.log("Yt playlist url found.");
 
 		for (let item of urllist) {
-			const songInfo = await ytdl.getInfo(item);
-			if (!songInfo)
-				return msg.channel.send("Encountered a problem with the song :/");
-			var song = {
-				id: id,
-				title: songInfo.videoDetails.title,
-				url: songInfo.videoDetails.video_url,
-			};
-			songlist.push(song);
-			id++;
+			try {
+        const songInfo = await ytdl.getInfo(item);
+			  var song = {
+				  id: id,
+				  title: songInfo.videoDetails.title,
+				  url: songInfo.videoDetails.video_url,
+			  };
+			  songlist.push(song);
+			  id++;
+      }
+      catch(err){
+        console.log(`${err.name}: ${err.message}`);
+        return msg.channel.send(":/ Encountered a problem with the song:" +err.message);
+      }
 		}
 
 		console.log("Songs retrieved and pushed successfully.");
@@ -113,15 +122,29 @@ async function play(msg, args) {
 		urllist = [];
 		songlist = [];
 	} else {
-		const video = await videoFinder(args);
-		if (matchYoutubeUrl(args)) {
-			console.log("URL found !");
-			query = args;
-		} else {
-			query = video.url;
-		}
-
-		const songInfo = await ytdl.getInfo(query);
+		try {
+      const video = await videoFinder(args);
+		  if (matchYoutubeUrl(args)) {
+			  console.log("URL found !");
+			  query = args;
+		  } else {
+			  query = video.url;
+		  }
+    }
+    catch(err) {
+      console.log(`${err.name}: ${err.message}`);
+      return msg.channel.send(":/ Encountered a problem with the url: " +err.message);
+    }
+    
+    var songInfo;
+    try {
+      songInfo = await ytdl.getInfo(query);
+    }
+    catch(err) {
+      console.log(`${err.name}: ${err.message}`);
+      return msg.channel.send(":/ Encountered a problem with the song: " +err.message);
+    }
+		
 		const song = {
 			id: id,
 			title: songInfo.videoDetails.title,
