@@ -1,7 +1,8 @@
 module.exports = function (msg, args) {
 	const serverQueue = msg.client.queue.get(msg.guild.id);
 	if (serverQueue) {
-		serverQueue.connection.dispatcher.pause();
+    if (serverQueue.connection.dispatcher)
+		  serverQueue.connection.dispatcher.pause();
 		serverQueue.playing = true;
 		serverQueue.songs = [];
 		serverQueue.i = 0;
