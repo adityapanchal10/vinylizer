@@ -10,7 +10,7 @@ module.exports = function (msg, args) {
     const { birthtime } = Fs.statSync(file)
     return birthtime
   }
-  const dateCreated = createdDate('./default.log');
+  const dateCreated = createdDate('./init.txt');
   // console.log(dateCreated.getTime());
 
   const d = new Date();
