@@ -44,12 +44,10 @@ async function play(msg, args) {
 	// console.log(args);
 
   var isSpot = await spotifyToYT.validateURL(args)
+  var spotPlaylist = await spotifyToYT.isTrackOrPlaylist(args) === 'playlist' ? true : false;
 
-	if (isPlaylist(args) || isSpot) {
+	if (isPlaylist(args) || spotPlaylist) {
 		var response, list;
-    if (isSpot) {
-      var spotPlaylist = await spotifyToYT.isTrackOrPlaylist(args) === 'playlist' ? true : false; 
-    }
 
     channel.send("Playlist url processing, please wait.")
 
