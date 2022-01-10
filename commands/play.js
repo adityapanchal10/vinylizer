@@ -1,7 +1,7 @@
 const ytdl = require("ytdl-core");
 const ytSearch = require("yt-search");
 const ytpl = require("ytpl");
-const spotifyToYT = require("spotify-to-yt")
+const spotifyToYT = require("spotify-to-yt");
 
 let query, id, shuffle;
 let flag = false;
@@ -43,9 +43,11 @@ async function play(msg, args) {
 
 	// console.log(args);
 
-	if (isPlaylist(args) || spotifyToYT.validateURL(args)) {
+  var isSpot = await spotifyToYT.validateURL(args)
+
+	if (isPlaylist(args) || isSpot) {
 		var response, list;
-    if (!isPlaylist(args)) {
+    if (isSpot) {
       var spotPlaylist = await spotifyToYT.isTrackOrPlaylist(args) === 'playlist' ? true : false; 
     }
 
@@ -149,15 +151,13 @@ async function play(msg, args) {
 		songlist = [];
 	} else {
 		try {
-      if (spotifyToYT.validateURL(args)) {
+      if (isSpot) {
         console.log("Spotify URL found !");
         var spotSong;
         var isTrack = await spotifyToYT.isTrackOrPlaylist(args)
         if (isTrack === 'track') {
           spotSong = await spotifyToYT.trackGet(args)
           query = spotSong.url;
-          //console.log("here2");
-          //console.log(query);
         }
       }
       else {
@@ -169,7 +169,7 @@ async function play(msg, args) {
           query = video.url;
         }
       }
-      console.log("----> " + query)
+      // console.log("----> " + query)
     }
     catch(err) {
       console.log(`${err.name}: ${err.message}`);
