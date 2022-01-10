@@ -65,7 +65,7 @@ async function playsaved(msg, args) {
 	}
 }
 
-function playy(msg, song) {
+async function playy(msg, song) {
 	const queue = msg.client.queue;
 	const guild = msg.guild;
 	const serverQueue = queue.get(guild.id);

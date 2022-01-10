@@ -20,6 +20,8 @@ const jumpto = require("./commands/jumpto");
 const viewsaved = require("./commands/viewsaved");
 const shuffle = require("./commands/shuffle");
 const uptime = require("./commands/uptime");
+const cls = require("./commands/cls");
+
 
 const p = play
 const q = queue
@@ -50,7 +52,8 @@ const commandList = {
   n,
   h,
   s,
-  uptime
+  uptime,
+  cls
 };
 
 module.exports = async function (msg) {

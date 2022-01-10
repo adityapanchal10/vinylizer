@@ -1,6 +1,8 @@
 const ytdl = require("ytdl-core");
 const ytSearch = require("yt-search");
 const ytpl = require("ytpl");
+const spotifyToYT = require("spotify-to-yt")
+
 let query, id, shuffle;
 let flag = false;
 let urllist = [];
@@ -41,21 +43,42 @@ async function play(msg, args) {
 
 	// console.log(args);
 
-	if (isPlaylist(args)) {
-		var response;
-    try {
-      response = await ytpl(args);
+	if (isPlaylist(args) || spotifyToYT.validateURL(args)) {
+		var response, list;
+    if (!isPlaylist(args)) {
+      var spotPlaylist = await spotifyToYT.isTrackOrPlaylist(args) === 'playlist' ? true : false; 
     }
-    catch(err) {
-      console.log(`${err.name}: ${err.message}`);
-      return msg.channel.send(":/ Encountered a problem with the url: " +err.message);
+
+    channel.send("Playlist url processing, please wait.")
+
+    if(spotPlaylist) {
+      console.log("Spotify playlist found.")
+      try {
+        response = await spotifyToYT.playListGet(args);
+      }
+      catch(err) {
+        console.log(`${err.name}: ${err.message}`);
+        return msg.channel.send(":/ Encountered a problem with the url: " +err.message);
+      }
+      // console.log(response);
+      urllist = response.songs;
     }
-		const list = response.items;
-		list.forEach((element) => {
-			urllist.push(element.shortUrl);
-		});
-		// console.log(urllist);
-		console.log("Yt playlist url found.");
+    else {
+  		console.log("Yt playlist url found.");
+      try {
+        response = await ytpl(args);
+      }
+      catch(err) {
+        console.log(`${err.name}: ${err.message}`);
+        return msg.channel.send(":/ Encountered a problem with the url: " +err.message);
+      }
+      list = response.items;
+      list.forEach((element) => {
+			  urllist.push(element.shortUrl);
+		  });
+    }
+	  
+    // console.log(urllist);
 
 		for (let item of urllist) {
 			try {
@@ -94,7 +117,10 @@ async function play(msg, args) {
 
 			queueConstruct.songs = songlist;
 
-			queueConstruct.textChannel.send("🎼 Youtube playlist found !!");
+			if (spotPlaylist) 
+        queueConstruct.textChannel.send("🎼 Spotify playlist found !!");
+      else
+        queueConstruct.textChannel.send("🎼 Youtube playlist found !!");
 
 			try {
 				var connection = await voiceChannel.join();
@@ -123,13 +149,27 @@ async function play(msg, args) {
 		songlist = [];
 	} else {
 		try {
-      const video = await videoFinder(args);
-		  if (matchYoutubeUrl(args)) {
-			  console.log("URL found !");
-			  query = args;
-		  } else {
-			  query = video.url;
-		  }
+      if (spotifyToYT.validateURL(args)) {
+        console.log("Spotify URL found !");
+        var spotSong;
+        var isTrack = await spotifyToYT.isTrackOrPlaylist(args)
+        if (isTrack === 'track') {
+          spotSong = await spotifyToYT.trackGet(args)
+          query = spotSong.url;
+          //console.log("here2");
+          //console.log(query);
+        }
+      }
+      else {
+        const video = await videoFinder(args);
+        if (matchYoutubeUrl(args)) {
+          console.log("URL found !");
+          query = args;
+        } else {
+          query = video.url;
+        }
+      }
+      console.log("----> " + query)
     }
     catch(err) {
       console.log(`${err.name}: ${err.message}`);
@@ -193,7 +233,7 @@ async function play(msg, args) {
 	}
 }
 
-function playy(msg, song) {
+async function playy(msg, song) {
 	const queue = msg.client.queue;
 	const guild = msg.guild;
 	const serverQueue = queue.get(guild.id);
