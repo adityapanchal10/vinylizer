@@ -44,7 +44,9 @@ async function play(msg, args) {
 	// console.log(args);
 
   var isSpot = await spotifyToYT.validateURL(args)
-  var spotPlaylist = await spotifyToYT.isTrackOrPlaylist(args) === 'playlist' ? true : false;
+  var spotPlaylist = false;
+  if (isSpot)
+    spotPlaylist = await spotifyToYT.isTrackOrPlaylist(args) === 'playlist' ? true : false;
 
 	if (isPlaylist(args) || spotPlaylist) {
 		var response, list;
