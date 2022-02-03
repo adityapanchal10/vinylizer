@@ -233,6 +233,8 @@ async function play(msg, args) {
 	}
 }
 
+const sleep = (ms = 60000) => new Promise((r) => setTimeout(r, ms));
+
 async function playy(msg, song) {
 	const queue = msg.client.queue;
 	const guild = msg.guild;
@@ -243,6 +245,8 @@ async function playy(msg, song) {
 	console.log(song);
 
 	if (!song) {
+    await sleep();
+  
     serverQueue.voiceChannel.leave()
 		serverQueue.textChannel.send(`Finished playing. ✨`);
     queue.delete(guild.id);
