@@ -245,13 +245,14 @@ async function playy(msg, song) {
 	console.log(song);
 
 	if (!song) {
-    await sleep();
-  
-    serverQueue.voiceChannel.leave()
-		serverQueue.textChannel.send(`Finished playing. ✨`);
     queue.delete(guild.id);
 		msg.client.id.set(guild.id, 1);
-		return;
+    await sleep();
+    if (!msg.client.queue.get(guild.id)) {
+		  serverQueue.textChannel.send(`Finished playing. ✨`);
+      serverQueue.voiceChannel.leave()
+    }
+		  return;
 	}
 
 	const stream = ytdl(song.url, {
