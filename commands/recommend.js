@@ -95,7 +95,8 @@ module.exports = function(msg, args) {
 
               if (recommendation_list.length === 0)
           			return msg.channel.send("No recommendations :/");
-          		return msg.channel.send(`
+          		console.log("Recommendations found successfully ^_^");
+              return msg.channel.send(`
           __**Recommendations (Similar to '${args}'):**__
 ${recommendation_list.map((song) => `-> ${song.name}  **by**  ${song.artist},  Album: ${song.album}`).join("\n")}`);
               
