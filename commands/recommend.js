@@ -59,7 +59,9 @@ module.exports = function(msg, args) {
   		request.get(options, function (error, response, body) {
         if (!error && response.statusCode === 200) {
           
-    			// console.log(body.tracks.items[0]);
+    			if (body.tracks.items.length === 0)
+            return msg.channel.send("No recommendations found :/");
+          
     			spot_id = body.tracks.items[0].id;
           spot_album = body.tracks.items[0].album.name;
           spot_artist = body.tracks.items[0].artists[0].id;
