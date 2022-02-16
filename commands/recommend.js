@@ -1,5 +1,6 @@
 require("dotenv").config();
 const { MessageEmbed } = require('discord.js');
+const getArtistTitle = require('get-artist-title');
 
 const spot_client = process.env.SPOT_CLIENT;
 const spot_client_secret = process.env.SPOT_CLIENT_SECRET;
@@ -26,6 +27,10 @@ module.exports = function(msg, args) {
     const serverQueue = msg.client.queue.get(msg.guild.id);
 	  if (serverQueue && serverQueue.songs.length != 0) {
 		  args = serverQueue.songs[serverQueue.i - 1].title;
+      let [ artist, title ] = getArtistTitle(args);
+      if (title)
+        args = title;
+      console.log(`Searching recommendations for '${args}'`);
 	  } else 
       return msg.channel.send("There is nothing playing.");
   }
