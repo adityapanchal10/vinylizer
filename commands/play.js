@@ -127,6 +127,7 @@ async function play(msg, args) {
 			try {
 				var connection = await voiceChannel.join();
 				queueConstruct.connection = connection;
+        connection.voice.setSelfDeaf(true);
 				playy(msg, queueConstruct.songs[queueConstruct.i++]);
 			} catch (err) {
 				console.log(err);
@@ -215,6 +216,7 @@ async function play(msg, args) {
 			try {
 				var connection = await voiceChannel.join();
 				queueConstruct.connection = connection;
+        connection.voice.setSelfDeaf(true);
 				playy(msg, queueConstruct.songs[queueConstruct.i++]);
 			} catch (err) {
 				console.log(err);
@@ -252,7 +254,7 @@ async function playy(msg, song) {
 		  serverQueue.textChannel.send(`Finished playing. ✨`);
       serverQueue.voiceChannel.leave()
     }
-		  return;
+	  return;
 	}
 
 	const stream = ytdl(song.url, {

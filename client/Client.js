@@ -20,6 +20,8 @@ module.exports = class extends (
     this.shuffle = new Map();
 
     this.date = null;
+
+    this.allowShubhda = true;
 	
 	}
 };

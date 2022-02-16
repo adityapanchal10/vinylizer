@@ -54,6 +54,7 @@ async function playsaved(msg, args) {
 		try {
 			var connection = await voiceChannel.join();
 			queueConstruct.connection = connection;
+      connection.voice.setSelfDeaf(true);
 			playy(msg, queueConstruct.songs[queueConstruct.i++]);
 		} catch (err) {
 			console.log(err);

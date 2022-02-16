@@ -21,6 +21,8 @@ const viewsaved = require("./commands/viewsaved");
 const shuffle = require("./commands/shuffle");
 const uptime = require("./commands/uptime");
 const cls = require("./commands/cls");
+const allowShubhda = require("./commands/allowShubhda");
+const recommend = require("./commands/recommend");
 
 
 const p = play
@@ -53,7 +55,9 @@ const commandList = {
   h,
   s,
   uptime,
-  cls
+  cls,
+  allowShubhda,
+  recommend
 };
 
 module.exports = async function (msg) {
@@ -72,6 +76,9 @@ module.exports = async function (msg) {
 		if (command.charAt(0) === process.env.ID) {
 			command = command.substring(1);
 			// console.log(command);
+
+    if (msg.author.tag === 'Shubh#6010' && !msg.client.allowShubhda)
+      return msg.channel.send(`Shubda not allowed :/`);
 			
     if (!commandList[command])
       return msg.channel.send(`Please enter a valid command, for more info type **-help**`);
