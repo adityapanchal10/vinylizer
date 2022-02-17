@@ -5,7 +5,7 @@ module.exports = function (msg, args) {
 		serverQueue.songs.length = 1;
 		serverQueue.i = 1;
 		serverQueue.jump = -1;
-		msg.client.id.set(msg.guild.id, 1);
+		msg.client.id.set(msg.guild.id, 2);
 		msg.client.shuffle.set(msg.guild.id, false);
 		return serverQueue.textChannel.send("Queue cleared!");
 	}

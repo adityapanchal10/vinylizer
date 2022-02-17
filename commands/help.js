@@ -14,19 +14,19 @@ module.exports = function (msg, args) {
 			},
 			{
 				name: "Get user info",
-				value: "-userinfo OR -userinfo @someone",
+				value: "-userinfo or -userinfo @someone",
 			},
 			{
 				name: "Play a song",
-				value: `-play song_name / song_url,  -p for short (adds to queue if a song is playing currently)`,
+				value: `-play song_name/song_url or -p (adds to queue if a song is currently playing)`,
 			},
 			{
 				name: "See queue",
-				value: `-queue OR -q`,
+				value: `-queue or -q`,
 			},
 			{
 				name: "Play next song in queue",
-				value: `-next OR -n`,
+				value: `-next or -n`,
 			},
 			{
 				name: "Play previous song in queue",
@@ -34,7 +34,7 @@ module.exports = function (msg, args) {
 			},
 			{
 				name: "Clear queue",
-				value: `-clear`,
+				value: `-clear or -cls to keep currently playing song and clear the rest of the queue`,
 			},
 			{
 				name: "Pause currently playing song",
@@ -55,6 +55,10 @@ module.exports = function (msg, args) {
 			{
 				name: "Save the current queue for later",
 				value: `-save queue_name`,
+			},
+      {
+				name: "Get recommendations",
+				value: `-recommend song_name or simply -recommend if there is a song currently playing`,
 			},
 			{
 				name: "Play a saved queue",
