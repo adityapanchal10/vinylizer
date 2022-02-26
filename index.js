@@ -7,6 +7,9 @@ require("dotenv").config();
 
 const commandHandler = require("./commandHandler");
 
+const fs = require('fs')
+const path = './init.txt'
+
 const Discord = require("discord.js");
 // const client = new Discord.Client();
 const Client = require("./client/Client");
@@ -20,6 +23,13 @@ client.on("ready", () => {
   client.date = new Date();
   console.log(`Timestamp: ${client.date.toLocaleDateString()} ${client.date.toLocaleTimeString()}`);
   log(`Logged in at ${client.date.toLocaleDateString()} ${client.date.toLocaleTimeString()} ! OS uptime: ${os.uptime()/86400} days`);
+  client.user.setActivity("-play", {
+    type: "LISTENING",
+    name: "play"
+  });
+  if (!fs.existsSync(path)) {
+    log(Date.now(), 'init.txt')
+  }
 });
 
 client.on("message", commandHandler);

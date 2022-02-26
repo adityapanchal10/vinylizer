@@ -1,12 +1,20 @@
 const { MessageEmbed } = require("discord.js");
 const { version } = require("../package.json");
 const os = require('os');
+const Fs = require('fs')
 //const process = require('process');
 
 
 module.exports = function (msg, args) {
+  function createdDate (file) {  
+    const { birthtime } = Fs.statSync(file)
+    return birthtime
+  }
+  const dateCreated = createdDate('./init.txt');
+  // console.log(dateCreated.getTime());
+
   const d = new Date();
-  var millis = d.getTime() - msg.client.date.getTime();
+  var millis = d.getTime() - dateCreated.getTime();
   millis = Math.floor(millis/1000); // get seconds
   console.log(millis);
   var dayz = millis/86400; // get days

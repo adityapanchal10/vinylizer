@@ -1,15 +1,25 @@
 const ytdl = require("ytdl-core");
 const ytSearch = require("yt-search");
 const ytpl = require("ytpl");
-let query, id;
+const spotifyToYT = require("spotify-to-yt");
+
+let query, id, shuffle;
 let flag = false;
 let urllist = [];
 let songlist = [];
 
 async function play(msg, args) {
 	const { guild, channel, member } = msg;
-	id = msg.client.id;
-	const shuffle = msg.client.shuffle;
+	id = msg.client.id.get(guild.id);
+	if (!id) {
+		msg.client.id.set(guild.id, 1);
+		id = msg.client.id.get(guild.id);
+	}
+	shuffle = msg.client.shuffle.get(guild.id);
+	if (!shuffle) {
+		msg.client.shuffle.set(guild.id, false);
+		shuffle = msg.client.shuffle.get(guild.id);
+	}
 	// console.log("S_id " + id);
 
 	const voiceChannel = member.voice.channel;
@@ -33,33 +43,65 @@ async function play(msg, args) {
 
 	// console.log(args);
 
-	if (isPlaylist(args)) {
-		const response = await ytpl(args);
-		if (!response)
-			return msg.channel.send("Encountered a problem with the url :/");
-		const list = response.items;
-		list.forEach((element) => {
-			urllist.push(element.shortUrl);
-		});
-		// console.log(urllist);
-		console.log("Yt playlist url found.");
+  var isSpot = await spotifyToYT.validateURL(args)
+  var spotPlaylist = false;
+  if (isSpot)
+    spotPlaylist = await spotifyToYT.isTrackOrPlaylist(args) === 'playlist' ? true : false;
+
+	if (isPlaylist(args) || spotPlaylist) {
+		var response, list;
+
+    channel.send("Playlist url processing, please wait.")
+
+    if(spotPlaylist) {
+      console.log("Spotify playlist found.")
+      try {
+        response = await spotifyToYT.playListGet(args);
+      }
+      catch(err) {
+        console.log(`${err.name}: ${err.message}`);
+        return msg.channel.send(":/ Encountered a problem with the url: " +err.message);
+      }
+      // console.log(response);
+      urllist = response.songs;
+    }
+    else {
+  		console.log("Yt playlist url found.");
+      try {
+        response = await ytpl(args);
+      }
+      catch(err) {
+        console.log(`${err.name}: ${err.message}`);
+        return msg.channel.send(":/ Encountered a problem with the url: " +err.message);
+      }
+      list = response.items;
+      list.forEach((element) => {
+			  urllist.push(element.shortUrl);
+		  });
+    }
+	  
+    // console.log(urllist);
 
 		for (let item of urllist) {
-			const songInfo = await ytdl.getInfo(item);
-			if (!songInfo)
-				return msg.channel.send("Encountered a problem with the song :/");
-			var song = {
-				id: id,
-				title: songInfo.videoDetails.title,
-				url: songInfo.videoDetails.video_url,
-			};
-			songlist.push(song);
-			id++;
+			try {
+        const songInfo = await ytdl.getInfo(item);
+			  var song = {
+				  id: id,
+				  title: songInfo.videoDetails.title,
+				  url: songInfo.videoDetails.video_url,
+			  };
+			  songlist.push(song);
+			  id++;
+      }
+      catch(err){
+        console.log(`${err.name}: ${err.message}`);
+        return msg.channel.send(":/ Encountered a problem with the song:" +err.message);
+      }
 		}
 
 		console.log("Songs retrieved and pushed successfully.");
 		// console.log(songlist);
-		msg.client.id = id;
+		msg.client.id.set(guild.id, id);
 
 		if (!serverQueue) {
 			const queueConstruct = {
@@ -77,11 +119,15 @@ async function play(msg, args) {
 
 			queueConstruct.songs = songlist;
 
-			queueConstruct.textChannel.send("🎼 Youtube playlist found !!");
+			if (spotPlaylist) 
+        queueConstruct.textChannel.send("🎼 Spotify playlist found !!");
+      else
+        queueConstruct.textChannel.send("🎼 Youtube playlist found !!");
 
 			try {
 				var connection = await voiceChannel.join();
 				queueConstruct.connection = connection;
+        connection.voice.setSelfDeaf(true);
 				playy(msg, queueConstruct.songs[queueConstruct.i++]);
 			} catch (err) {
 				console.log(err);
@@ -105,22 +151,48 @@ async function play(msg, args) {
 		urllist = [];
 		songlist = [];
 	} else {
-		const video = await videoFinder(args);
-		if (matchYoutubeUrl(args)) {
-			console.log("URL found !");
-			query = args;
-		} else {
-			query = video.url;
-		}
-
-		const songInfo = await ytdl.getInfo(query);
+		try {
+      if (isSpot) {
+        console.log("Spotify URL found !");
+        var spotSong;
+        var isTrack = await spotifyToYT.isTrackOrPlaylist(args)
+        if (isTrack === 'track') {
+          spotSong = await spotifyToYT.trackGet(args)
+          query = spotSong.url;
+        }
+      }
+      else {
+        const video = await videoFinder(args);
+        if (matchYoutubeUrl(args)) {
+          console.log("URL found !");
+          query = args;
+        } else {
+          query = video.url;
+        }
+      }
+      // console.log("----> " + query)
+    }
+    catch(err) {
+      console.log(`${err.name}: ${err.message}`);
+      return msg.channel.send(":/ Encountered a problem with the url: " +err.message);
+    }
+    
+    var songInfo;
+    try {
+      songInfo = await ytdl.getInfo(query);
+    }
+    catch(err) {
+      console.log(`${err.name}: ${err.message}`);
+      return msg.channel.send(":/ Encountered a problem with the song: " +err.message);
+    }
+		
 		const song = {
 			id: id,
 			title: songInfo.videoDetails.title,
 			url: songInfo.videoDetails.video_url,
 		};
 		id++;
-		msg.client.id = id;
+		msg.client.id.set(guild.id, id);
 		// console.log("R_id " + id);
 
 		console.log("Song found and pushed !");
@@ -144,6 +216,7 @@ async function play(msg, args) {
 			try {
 				var connection = await voiceChannel.join();
 				queueConstruct.connection = connection;
+        connection.voice.setSelfDeaf(true);
 				playy(msg, queueConstruct.songs[queueConstruct.i++]);
 			} catch (err) {
 				console.log(err);
@@ -162,7 +235,9 @@ async function play(msg, args) {
 	}
 }
 
-function playy(msg, song) {
+const sleep = (ms = 60000) => new Promise((r) => setTimeout(r, ms));
+
+async function playy(msg, song) {
 	const queue = msg.client.queue;
 	const guild = msg.guild;
 	const serverQueue = queue.get(guild.id);
@@ -172,11 +247,14 @@ function playy(msg, song) {
 	console.log(song);
 
 	if (!song) {
-		serverQueue.voiceChannel.leave();
-		queue.delete(guild.id);
-		serverQueue.textChannel.send(`Finished playing. ✨`);
-		msg.client.id = 1;
-		return;
+    queue.delete(guild.id);
+		msg.client.id.set(guild.id, 1);
+    await sleep();
+    if (!msg.client.queue.get(guild.id)) {
+		  serverQueue.textChannel.send(`Finished playing. ✨`);
+      serverQueue.voiceChannel.leave()
+    }
+	  return;
 	}
 
 	const stream = ytdl(song.url, {
@@ -187,7 +265,7 @@ function playy(msg, song) {
 	const dispatcher = serverQueue.connection
 		.play(stream, { seek: 0, volume: 1 })
 		.on("finish", () => {
-			if (msg.client.shuffle) {
+			if (msg.client.shuffle.get(guild.id)) {
 				if (serverQueue.jump != -1) {
 					serverQueue.i = serverQueue.jump;
 					serverQueue.jump = -1;
@@ -200,12 +278,15 @@ function playy(msg, song) {
 
 function matchYoutubeUrl(url) {
 	var p = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
-	if (url.match(p)) return true;
+  var q = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?/
+  var r = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/gm;
+	if (url.match(p) || url.match(q) || url.match(r)) return true;
 	return false;
 }
 
 function isPlaylist(url) {
-	var q = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
+	// var q = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
+  var q = /^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/;
 	if (url.match(q)) {
 		flag = true;
 		return true;

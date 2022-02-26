@@ -10,5 +10,6 @@ module.exports = function (msg, args) {
 			"There is nothing playing that I could skip for you."
 		);
 
-	serverQueue.connection.dispatcher.end("Skip command has been used!");
+	if (serverQueue.connection.dispatcher)
+    serverQueue.connection.dispatcher.end("Skip command has been used!");
 };

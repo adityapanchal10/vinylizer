@@ -15,11 +15,13 @@ module.exports = class extends (
 
 		this.config = config;
 
-		this.id = 1;
+		this.id = new Map();
 
-    this.shuffle = false;
+    this.shuffle = new Map();
 
     this.date = null;
+
+    this.allowShubhda = true;
 	
 	}
 };

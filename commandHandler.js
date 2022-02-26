@@ -18,8 +18,18 @@ const save = require("./commands/save");
 const playsaved = require("./commands/playsaved");
 const jumpto = require("./commands/jumpto");
 const viewsaved = require("./commands/viewsaved");
-
 const shuffle = require("./commands/shuffle");
+const uptime = require("./commands/uptime");
+const cls = require("./commands/cls");
+const allowShubhda = require("./commands/allowShubhda");
+const recommend = require("./commands/recommend");
+
+
+const p = play
+const q = queue
+const n = next
+const h = help
+const s = shuffle
 
 const commandList = {
 	ping,
@@ -39,13 +49,24 @@ const commandList = {
 	jumpto,
 	viewsaved,
 	shuffle,
-
+  p,
+  q,
+  n,
+  h,
+  s,
+  uptime,
+  cls,
+  allowShubhda,
+  recommend
 };
 
 module.exports = async function (msg) {
 	if (
 		msg.channel.id === process.env.CHANNELID1 ||
-		msg.channel.id === process.env.CHANNELID2
+		msg.channel.id === process.env.CHANNELID2 ||
+    msg.channel.id === process.env.CHANNELID3 ||
+    msg.channel.id === process.env.CHANNELID4 || 
+    msg.channel.id === process.env.CHANNELID5
 	) {
 		// console.log(msg.content);
 		let tokens = msg.content.split(" ");
@@ -55,9 +76,12 @@ module.exports = async function (msg) {
 		if (command.charAt(0) === process.env.ID) {
 			command = command.substring(1);
 			// console.log(command);
+
+    if (msg.author.tag === 'Shubh#6010' && !msg.client.allowShubhda)
+      return msg.channel.send(`Shubda not allowed :/`);
 			
     if (!commandList[command])
-      return msg.channel.send(`Please enter a valid command, for more info type **!help**`);
+      return msg.channel.send(`Please enter a valid command, for more info type **-help**`);
     commandList[command](msg, tokens.join(` `));
 		}
 	}
