@@ -1,4 +1,4 @@
-const mySecret = process.env['BOTTOKEN']
+const mySecret = process.env['BOTTOKEN'];
 
 const log = require('log-to-file'); // for file logging
 const os = require('os');
@@ -6,17 +6,17 @@ const os = require('os');
 require("dotenv").config();
 
 const commandHandler = require("./commandHandler");
+const Client = require("./client/Client");
 
-const fs = require('fs')
-const path = './init.txt'
+const fs = require('fs');
+const path = './init.txt';
 
 const Discord = require("discord.js");
 // const client = new Discord.Client();
-const Client = require("./client/Client");
 const client = new Client();
 client.login(mySecret);
 
-client.on("ready", () => {
+client.on("readyy", () => {
 	console.log(`🤖 Beep boop boop beep `);
 	console.log(`Logged in as ${client.user.tag}!`);
 	console.log(`🌻 Hello there...`);
@@ -28,7 +28,7 @@ client.on("ready", () => {
     name: "play"
   });
   if (!fs.existsSync(path)) {
-    log(Date.now(), 'init.txt')
+    log(Date.now(), 'init.txt');
   }
 });
 
