@@ -141,7 +141,7 @@ async function play(msg, args) {
 				element.id = ++a;
 			});
 			serverQueue.songs = songz.concat(songlist);
-			console.log(serverQueue.songs);
+			// console.log(serverQueue.songs);
 
 			if (serverQueue.songs.length === songlist.length) {
 				playy(msg, serverQueue.songs[serverQueue.i++]);
