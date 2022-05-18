@@ -107,9 +107,3 @@ dist
 init.txt
 
 commands/allowShubhda.js
-
-# environment variables
-.env
-
-#Saved playlists
-saved/
