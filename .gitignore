@@ -107,6 +107,3 @@ dist
 init.txt
 
 commands/allowShubhda.js
-
-# environment variables file
-.env
