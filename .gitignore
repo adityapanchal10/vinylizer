@@ -113,3 +113,8 @@ commands/allowShubhda.js
 
 #Saved playlists
 saved/
+
+#logs
+error_logs.txt
+logs.txt
+play_logs.txt
