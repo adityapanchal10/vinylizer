@@ -1,4 +1,5 @@
 require("dotenv").config();
+const log = require('log-to-file');
 
 // const fs = require("fs");
 
@@ -28,6 +29,7 @@ const recommend = require("./commands/recommend");
 const p = play
 const q = queue
 const n = next
+const skip = next
 const h = help
 const s = shuffle
 
@@ -49,24 +51,25 @@ const commandList = {
 	jumpto,
 	viewsaved,
 	shuffle,
-  p,
-  q,
-  n,
-  h,
-  s,
-  uptime,
-  cls,
-  allowShubhda,
-  recommend
+	p,
+	q,
+	n,
+	skip,
+	h,
+	s,
+	uptime,
+	cls,
+	allowShubhda,
+	recommend
 };
 
 module.exports = async function (msg) {
 	if (
 		msg.channel.id === process.env.CHANNELID1 ||
 		msg.channel.id === process.env.CHANNELID2 ||
-    msg.channel.id === process.env.CHANNELID3 ||
-    msg.channel.id === process.env.CHANNELID4 || 
-    msg.channel.id === process.env.CHANNELID5
+		msg.channel.id === process.env.CHANNELID3 ||
+		msg.channel.id === process.env.CHANNELID4 ||
+		msg.channel.id === process.env.CHANNELID5
 	) {
 		// console.log(msg.content);
 		let tokens = msg.content.split(" ");
@@ -77,12 +80,15 @@ module.exports = async function (msg) {
 			command = command.substring(1);
 			// console.log(command);
 
-    if (msg.author.tag === 'Shubh#6010' && !msg.client.allowShubhda)
-      return msg.channel.send(`Shubda not allowed :/`);
-			
-    if (!commandList[command])
-      return msg.channel.send(`Please enter a valid command, for more info type **-help**`);
-    commandList[command](msg, tokens.join(` `));
+			if (msg.author.tag === 'Shubh#6010' && !msg.client.allowShubhda)
+				return msg.channel.send(`Shubda not allowed :/`);
+
+			if (!commandList[command]) {
+				log(`${msg.author.tag}: Invalid command entered - ${command}, Arguments - ${tokens.join(` `)}`, './error_logs.txt');
+				return msg.channel.send(`Please enter a valid command, for more info type **-help**`);
+			}
+			log(`${msg.author.tag}: Command entered - ${command}, Arguments - ${tokens.join(` `)}`, './logs.txt');
+			commandList[command](msg, tokens.join(` `));
 		}
 	}
 };
