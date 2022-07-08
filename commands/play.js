@@ -2,6 +2,7 @@ const ytdl = require("ytdl-core");
 const ytSearch = require("yt-search");
 const ytpl = require("ytpl");
 const spotifyToYT = require("spotify-to-yt");
+const log = require('log-to-file');
 
 let query, id, shuffle;
 let flag = false;
@@ -259,6 +260,7 @@ async function playy(msg, song) {
 	const queue = msg.client.queue;
 	const guild = msg.guild;
 	const serverQueue = queue.get(guild.id);
+	let stream;
 
 	console.log("Now playing: ");
 	console.log(serverQueue.i);
@@ -277,7 +279,7 @@ async function playy(msg, song) {
 	}
 
 	try {
-		const stream = ytdl(song.url, {
+		stream = ytdl(song.url, {
 			filter: "audioonly",
 			quality: "highestaudio",
 		});
