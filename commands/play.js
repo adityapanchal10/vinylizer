@@ -265,7 +265,8 @@ async function playy(msg, song) {
 	console.log("Now playing: ");
 	console.log(serverQueue.i);
 	console.log(song);
-	log(`${msg.author.tag}: Now playing - ${serverQueue.i}. ${song.title}`, 'play_logs.txt')
+	if (song.title)
+		log(`${msg.author.tag}: Now playing - ${serverQueue.i}. ${song.title}`, 'play_logs.txt')
 
 	if (!song) {
 		queue.delete(guild.id);
