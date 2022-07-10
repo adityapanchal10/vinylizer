@@ -80,7 +80,7 @@ module.exports = async function (msg) {
 			command = command.substring(1);
 			// console.log(command);
 
-			if (msg.author.tag === 'Shubh#6010' && !msg.client.allowShubhda)
+			if (msg.author.id === 947156903736258560 && !msg.client.allowShubhda)
 				return msg.channel.send(`Shubda not allowed :/`);
 
 			if (!commandList[command]) {
