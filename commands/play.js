@@ -1,7 +1,11 @@
-const ytdl = require("ytdl-core");
-const ytSearch = require("yt-search");
-const ytpl = require("ytpl");
-const spotifyToYT = require("spotify-to-yt");
+/* eslint-disable no-var */
+/* eslint-disable no-inline-comments */
+/* eslint-disable no-shadow */
+/* eslint-disable no-unused-vars */
+const ytdl = require('ytdl-core');
+const ytSearch = require('yt-search');
+const ytpl = require('ytpl');
+const spotifyToYT = require('spotify-to-yt');
 const log = require('log-to-file');
 
 let query, id, shuffle;
@@ -24,15 +28,12 @@ async function play(msg, args) {
 	// console.log("S_id " + id);
 
 	const voiceChannel = member.voice.channel;
-	if (!voiceChannel)
-		return channel.send("Need to be connected in a voice channel.");
+	if (!voiceChannel) {return channel.send('Need to be connected in a voice channel.');}
 
 	const perm = voiceChannel.permissionsFor(msg.client.user);
-	if (!perm.has("CONNECT") || !perm.has("SPEAK"))
-		return channel.send("You do not have necessary permissions.");
+	if (!perm.has('CONNECT') || !perm.has('SPEAK')) {return channel.send('You do not have necessary permissions.');}
 
-	if (!args)
-		return channel.send("Please enter a valid song name or link.");
+	if (!args) {return channel.send('Please enter a valid song name or link.');}
 
 	const serverQueue = msg.client.queue.get(guild.id);
 	const queue = msg.client.queue;
@@ -44,39 +45,38 @@ async function play(msg, args) {
 
 	// console.log(args);
 
-	var isSpot = await spotifyToYT.validateURL(args)
-	var spotPlaylist = false;
-	if (isSpot)
-		spotPlaylist = await spotifyToYT.isTrackOrPlaylist(args) === 'playlist' ? true : false;
+	const isSpot = await spotifyToYT.validateURL(args);
+	let spotPlaylist = false;
+	if (isSpot) {spotPlaylist = await spotifyToYT.isTrackOrPlaylist(args) === 'playlist' ? true : false;}
 
 	if (isPlaylist(args) || spotPlaylist) {
-		var response, list;
+		let response, list;
 
-		channel.send("Playlist url processing, please wait.")
+		channel.send('Playlist url processing, please wait.');
 
 		if (spotPlaylist) {
-			console.log("Spotify playlist found.")
-			log(`${msg.author.tag}: Spotify playlist added, URL - ${args}`, 'play_logs.txt')
+			console.log('Spotify playlist found.');
+			log(`${msg.author.tag}: Spotify playlist added, URL - ${args}`, 'play_logs.txt');
 			try {
 				response = await spotifyToYT.playListGet(args);
 			}
 			catch (err) {
 				console.log(`${err.name}: ${err.message}`);
-				return msg.channel.send(":/ Encountered a problem with the url: " + err.message);
+				return msg.channel.send(':/ Encountered a problem with the url: ' + err.message);
 			}
 			// console.log(response);
-			log(`${msg.author.tag}: converted spotify to yt successfully.`, 'play_logs.txt')
+			log(`${msg.author.tag}: converted spotify to yt successfully.`, 'play_logs.txt');
 			urllist = response.songs;
 		}
 		else {
-			console.log("Yt playlist url found.");
-			log(`${msg.author.tag}: YouTube playlist added, URL - ${args}`, 'play_logs.txt')
+			console.log('Yt playlist url found.');
+			log(`${msg.author.tag}: YouTube playlist added, URL - ${args}`, 'play_logs.txt');
 			try {
 				response = await ytpl(args);
 			}
 			catch (err) {
 				console.log(`${err.name}: ${err.message}`);
-				return msg.channel.send(":/ Encountered a problem with the url: " + err.message);
+				return msg.channel.send(':/ Encountered a problem with the url: ' + err.message);
 			}
 			list = response.items;
 			list.forEach((element) => {
@@ -86,10 +86,10 @@ async function play(msg, args) {
 
 		// console.log(urllist);
 
-		for (let item of urllist) {
+		for (const item of urllist) {
 			try {
 				const songInfo = await ytdl.getInfo(item);
-				var song = {
+				const song = {
 					id: id,
 					title: songInfo.videoDetails.title,
 					url: songInfo.videoDetails.video_url,
@@ -99,12 +99,12 @@ async function play(msg, args) {
 			}
 			catch (err) {
 				console.log(`${err.name}: ${err.message}`);
-				return msg.channel.send(":/ Encountered a problem with the song:" + err.message);
+				return msg.channel.send(':/ Encountered a problem with the song:' + err.message);
 			}
 		}
 
-		console.log("Songs retrieved and pushed successfully.");
-		log(`${msg.author.tag}: songlist created successfully`, 'play_logs.txt')
+		console.log('Songs retrieved and pushed successfully.');
+		log(`${msg.author.tag}: songlist created successfully`, 'play_logs.txt');
 
 		// console.log(songlist);
 		msg.client.id.set(guild.id, id);
@@ -126,12 +126,12 @@ async function play(msg, args) {
 			queueConstruct.songs = songlist;
 
 			if (spotPlaylist) {
-				queueConstruct.textChannel.send("🎼 Spotify playlist found !!");
-				log(`${msg.author.tag}: Spotify Queue constructed`, 'play_logs.txt')
+				queueConstruct.textChannel.send('🎼 Spotify playlist found !!');
+				log(`${msg.author.tag}: Spotify Queue constructed`, 'play_logs.txt');
 			}
 			else {
-				log(`${msg.author.tag}: YouTube Queue constructed`, 'play_logs.txt')
-				queueConstruct.textChannel.send("🎼 Youtube playlist found !!");
+				log(`${msg.author.tag}: YouTube Queue constructed`, 'play_logs.txt');
+				queueConstruct.textChannel.send('🎼 Youtube playlist found !!');
 			}
 
 			try {
@@ -139,12 +139,14 @@ async function play(msg, args) {
 				queueConstruct.connection = connection;
 				connection.voice.setSelfDeaf(true);
 				playy(msg, queueConstruct.songs[queueConstruct.i++]);
-			} catch (err) {
+			}
+			catch (err) {
 				console.log(err);
 				queue.delete(guild.id);
 				return channel.send(err);
 			}
-		} else {
+		}
+		else {
 			const songz = serverQueue.songs;
 			let a = serverQueue.i;
 			songlist.forEach((element) => {
@@ -155,51 +157,52 @@ async function play(msg, args) {
 
 			if (serverQueue.songs.length === songlist.length) {
 				playy(msg, serverQueue.songs[serverQueue.i++]);
-			} else {
-				log(`${msg.author.tag}: playlist added to Queue`, 'play_logs.txt')
-				return channel.send(`🎼 Playlist has been added to the queue!`);
+			}
+			else {
+				log(`${msg.author.tag}: playlist added to Queue`, 'play_logs.txt');
+				return channel.send('🎼 Playlist has been added to the queue!');
 			}
 		}
 		urllist = [];
 		songlist = [];
-	} else {
+	}
+	else {
 		try {
 			if (isSpot) {
-				console.log("Spotify URL found !");
-				log(`${msg.author.tag}: Spotify song added, URL - ${args}`, 'play_logs.txt')
-				var spotSong;
-				var isTrack = await spotifyToYT.isTrackOrPlaylist(args)
+				console.log('Spotify URL found !');
+				log(`${msg.author.tag}: Spotify song added, URL - ${args}`, 'play_logs.txt');
+				let spotSong;
+				const isTrack = await spotifyToYT.isTrackOrPlaylist(args);
 				if (isTrack === 'track') {
-					spotSong = await spotifyToYT.trackGet(args)
+					spotSong = await spotifyToYT.trackGet(args);
 					query = spotSong.url;
-					log(`${msg.author.tag}: converted spotify track to youtube successfully.`, 'play_logs.txt')
+					log(`${msg.author.tag}: converted spotify track to youtube successfully.`, 'play_logs.txt');
 				}
 			}
+			else if (matchYoutubeUrl(args)) {
+				console.log('URL found !');
+				log(`${msg.author.tag}: YouTube song added, URL - ${args}`, 'play_logs.txt');
+				query = args;
+			}
 			else {
-				if (matchYoutubeUrl(args)) {
-					console.log("URL found !");
-					log(`${msg.author.tag}: YouTube song added, URL - ${args}`, 'play_logs.txt')
-					query = args;
-				} else {
-					const video = await videoFinder(args);
-					log(`${msg.author.tag}: YouTube song added, Name - ${args}`, 'play_logs.txt')
-					query = video.url;
-				}
+				const video = await videoFinder(args);
+				log(`${msg.author.tag}: YouTube song added, Name - ${args}`, 'play_logs.txt');
+				query = video.url;
 			}
 			// console.log("----> " + query)
 		}
 		catch (err) {
 			console.log(`${err.name}: ${err.message}`);
-			return msg.channel.send(":/ Encountered a problem with the url: " + err.message);
+			return msg.channel.send(':/ Encountered a problem with the url: ' + err.message);
 		}
 
-		var songInfo;
+		let songInfo;
 		try {
 			songInfo = await ytdl.getInfo(query);
 		}
 		catch (err) {
 			console.log(`${err.name}: ${err.message}`);
-			return msg.channel.send(":/ Encountered a problem with the song: " + err.message);
+			return msg.channel.send(':/ Encountered a problem with the song: ' + err.message);
 		}
 
 		const song = {
@@ -210,9 +213,9 @@ async function play(msg, args) {
 		id++;
 		msg.client.id.set(guild.id, id);
 		// console.log("R_id " + id);
-		log(`${msg.author.tag}: song is valid`, 'play_logs.txt')
+		log(`${msg.author.tag}: song is valid`, 'play_logs.txt');
 
-		console.log("Song found and pushed !");
+		console.log('Song found and pushed !');
 
 		if (!serverQueue) {
 			const queueConstruct = {
@@ -227,7 +230,7 @@ async function play(msg, args) {
 			};
 
 			queue.set(guild.id, queueConstruct);
-			log(`${msg.author.tag}: song Queue created successfully`, 'play_logs.txt')
+			log(`${msg.author.tag}: song Queue created successfully`, 'play_logs.txt');
 			queueConstruct.songs.push(song);
 
 			try {
@@ -235,20 +238,23 @@ async function play(msg, args) {
 				queueConstruct.connection = connection;
 				connection.voice.setSelfDeaf(true);
 				playy(msg, queueConstruct.songs[queueConstruct.i++]);
-				console.log("connection successful !");
-			} catch (err) {
+				console.log('connection successful !');
+			}
+			catch (err) {
 				console.log(err);
 				queue.delete(guild.id);
 				return channel.send(err);
 			}
-		} else {
+		}
+		else {
 			serverQueue.songs.push(song);
 			if (serverQueue.songs.length === 1) {
 				playy(msg, serverQueue.songs[serverQueue.i++]);
-			} else {
-				log(`${msg.author.tag}: song added to Queue`, 'play_logs.txt')
+			}
+			else {
+				log(`${msg.author.tag}: song added to Queue`, 'play_logs.txt');
 				return channel.send(
-					`🎶 **${song.title}** has been added to the queue!`
+					`🎶 **${song.title}** has been added to the queue!`,
 				);
 			}
 		}
@@ -263,70 +269,73 @@ async function playy(msg, song) {
 	const serverQueue = queue.get(guild.id);
 	let stream;
 
-	console.log("Now playing: ");
+	console.log('Now playing: ');
 	console.log(serverQueue.i);
 	console.log(song);
-	if (song.title)
-		log(`${msg.author.tag}: Now playing - ${serverQueue.i}. ${song.title}`, 'play_logs.txt')
+	if (song.title) {log(`${msg.author.tag}: Now playing - ${serverQueue.i}. ${song.title}`, 'play_logs.txt');}
 
 	if (!song) {
 		queue.delete(guild.id);
 		msg.client.id.set(guild.id, 1);
 		await sleep();
 		if (!msg.client.queue.get(guild.id)) {
-			serverQueue.textChannel.send(`Finished playing. ✨`);
-			serverQueue.voiceChannel.leave()
+			serverQueue.textChannel.send('Finished playing. ✨');
+			serverQueue.voiceChannel.leave();
 		}
 		return;
 	}
 
 	try {
 		stream = ytdl(song.url, {
-			filter: "audioonly",
-			quality: "highestaudio",
+			filter: 'audioonly',
+			quality: 'highestaudio',
 		});
-		log(`${msg.author.tag}: song (${song.title}) audio stream created.`, 'play_logs.txt')
-	} catch (error) {
+		log(`${msg.author.tag}: song (${song.title}) audio stream created.`, 'play_logs.txt');
+	}
+	catch (error) {
 		console.log(error);
-		return msg.channel.send(":/ Audio stream could not be created: " + error.name);
+		return msg.channel.send(':/ Audio stream could not be created: ' + error.name);
 	}
 
 	try {
 		const dispatcher = serverQueue.connection
 			.play(stream, { seek: 0, volume: 1 })
-			.on("finish", () => {
+			.on('finish', () => {
 				if (msg.client.shuffle.get(guild.id)) {
 					if (serverQueue.jump != -1) {
 						serverQueue.i = serverQueue.jump;
 						serverQueue.jump = -1;
-					} else serverQueue.i = randInt(0, serverQueue.songs.length);
-					log(`${msg.author.tag}: Song streaming - ${serverQueue.i}. ${song.title}, Shuffle: ON`, 'play_logs.txt')
+					}
+					else {serverQueue.i = randInt(0, serverQueue.songs.length);}
+					log(`${msg.author.tag}: Song streaming - ${serverQueue.i}. ${song.title}, Shuffle: ON`, 'play_logs.txt');
 					playy(msg, serverQueue.songs[serverQueue.i++]);
-				} else {
-					log(`${msg.author.tag}: Song streaming - ${serverQueue.i}. ${song.title}, Shuffle: OFF`, 'play_logs.txt')
+				}
+				else {
+					log(`${msg.author.tag}: Song streaming - ${serverQueue.i}. ${song.title}, Shuffle: OFF`, 'play_logs.txt');
 					playy(msg, serverQueue.songs[serverQueue.i++]);
 				}
 			});
 		serverQueue.textChannel.send(`🎶 Now playing: **${song.title}**`);
-	} catch (error) {
+	}
+	catch (error) {
 		console.log(error);
-		return msg.channel.send(":/ Error occured while playing song: " + error.name);
+		return msg.channel.send(':/ Error occured while playing song: ' + error.name);
 	}
 
 
 }
 
 function matchYoutubeUrl(url) {
-	var p = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
-	var q = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?/
-	var r = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/gm;
+	const p = /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+	const q = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?/;
+	const r = /^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$/gm;
 	if (url.match(p) || url.match(q) || url.match(r)) return true;
 	return false;
 }
 
 function isPlaylist(url) {
 	// var q = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
-	var q = /^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/;
+	const q = /^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/;
 	if (url.match(q)) {
 		flag = true;
 		return true;
