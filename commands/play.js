@@ -235,6 +235,7 @@ async function play(msg, args) {
 				queueConstruct.connection = connection;
 				connection.voice.setSelfDeaf(true);
 				playy(msg, queueConstruct.songs[queueConstruct.i++]);
+				console.log("connection successful !");
 			} catch (err) {
 				console.log(err);
 				queue.delete(guild.id);
